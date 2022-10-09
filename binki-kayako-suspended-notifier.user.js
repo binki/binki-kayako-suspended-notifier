@@ -65,9 +65,12 @@
         throw new Error(`Unhandled data schema.`);
       }
       if (totalCount) {
-        new Notification(`${totalCount} Suspended Messages`, {
+        const notification = new Notification(`${totalCount} Suspended Messages`, {
           requireInteraction: true,
           tag: 'kayako-suspended-notifier',
+        });
+        notification.addEventListener('click', e => {
+          document.querySelector('a[href*=suspended-messages]').click();
         });
       }
     } else {
