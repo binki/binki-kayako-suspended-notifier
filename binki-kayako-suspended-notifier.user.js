@@ -9,41 +9,46 @@
 // ==/UserScript==
 
 (async () => {
+  const dialogAsync = async (actionAsync) => {
+    const div = document.createElement('div');
+    div.style.position = 'fixed';
+    div.style.backgroundColor = 'rgba(0, 0, 0, .5)';
+    div.style.display = 'flex';
+    div.style.zIndex = 1;
+    div.style.width = '100%';
+    div.style.height='100%';
+    div.style.justifyContent = 'space-around'; 
+    div.style.alignItems = 'center';
+    const centerDiv = document.createElement('div');
+    centerDiv.style.backgroundColor = '#000';
+    centerDiv.style.padding = '8pt';
+    centerDiv.style.border = '1pt solid silver';
+    div.appendChild(centerDiv);
+    document.body.appendChild(div);
+    await actionAsync(centerDiv);
+    div.parentElement.removeChild(div);
+  };
   const permission = await navigator.permissions.query({
     name: 'notifications',
   });
   while (true) {
     while (permission.state !== 'granted') {
-      const div = document.createElement('div');
-      div.style.position = 'fixed';
-      div.style.backgroundColor = 'rgba(0, 0, 0, .5)';
-      div.style.display = 'flex';
-      div.style.zIndex = 1;
-      div.style.width = '100%';
-      div.style.height='100%';
-      div.style.justifyContent = 'space-around'; 
-      div.style.alignItems = 'center';
-      const centerDiv = document.createElement('div');
-      centerDiv.style.backgroundColor = '#000';
-      centerDiv.style.padding = '8pt';
-      centerDiv.style.border = '1pt solid silver';
-      centerDiv.textContent = 'binki-kayako-suspended-notifier: Notification permissions required.';
-      if (permission.state === 'denied') {
-        centerDiv.textContent += ' You have blocked notifications. You must unblock them to use this userscript.';
-      } else {
-        const button = document.createElement('button');
-        button.textContent = 'Request';
-        button.type = 'button';
-        button.addEventListener('click', () => {
-          Notification.requestPermission();
-        });
-        centerDiv.appendChild(button);
-      }
-      div.appendChild(centerDiv);
-      document.body.appendChild(div);
-      await new Promise(resolve => permission.onchange = resolve);
-      permission.onchange = null;
-      div.parentElement.removeChild(div);
+      await dialogAsync(async centerDiv => {
+        centerDiv.textContent = 'binki-kayako-suspended-notifier: Notification permissions required.';
+        if (permission.state === 'denied') {
+          centerDiv.textContent += ' You have blocked notifications. You must unblock them to use this userscript.';
+        } else {
+          const button = document.createElement('button');
+          button.textContent = 'Request';
+          button.type = 'button';
+          button.addEventListener('click', () => {
+            Notification.requestPermission();
+          });
+          centerDiv.appendChild(button);
+        }
+        await new Promise(resolve => permission.onchange = resolve);
+        permission.onchange = null;
+      });
     }
     {
       let loggedIn = false;
