@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name binki-kayako-suspended-notifier
-// @version 1.1
+// @version 1.2
 // @author Nathan Phillip Brink (binki) (@ohnobinki)
 // @homepageURL https://github.com/binki/binki-kayako-suspended-notifier/
 // @match https://*.kayako.com/agent/*
